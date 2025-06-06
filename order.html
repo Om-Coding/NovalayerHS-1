@@ -3,12 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Novalayer Home Services - Order</title>
+    <title>Novalayer Home Services - Order (Fixed)</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css" />
     <style>
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -78,17 +77,17 @@
       }
 
       ::-webkit-scrollbar-track {
-        background: #121212; /* Dark background track */
+        background: #121212;
       }
 
       ::-webkit-scrollbar-thumb {
-        background-color: #ffc107; /* Gold thumb */
+        background-color: #ffc107;
         border-radius: 10px;
-        border: 2px solid #121212; /* Optional border for contrast */
+        border: 2px solid #121212;
       }
 
       ::-webkit-scrollbar-thumb:hover {
-        background-color: #ffca2c; /* Slightly lighter on hover */
+        background-color: #ffca2c;
       }
       .display-1 {
         text-shadow: 0 0 8px #ffc107;
@@ -100,6 +99,17 @@
       .btn-warning:focus {
         box-shadow: 0 0 8px #ffc107, 0 0 15px #ffc107, 0 0 20px #ffc107,
           0 0 25px #ffc107;
+      }
+
+      .debug-info {
+        background-color: #2d3748;
+        border: 1px solid #4a5568;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px 0;
+        font-family: monospace;
+        font-size: 12px;
+        color: #e2e8f0;
       }
     </style>
   </head>
@@ -160,11 +170,17 @@
         Book a Service
       </h2>
       <p class="text-center text-light mb-4 fs-5">
-        Fill out the form and we’ll bring our services right to your doorstep.
+        Fill out the form and we'll bring our services right to your doorstep.
       </p>
     </section>
 
     <div class="container mb-5">
+      <!-- Debug Info Panel -->
+      <div class="debug-info" id="debugInfo" style="display: none">
+        <h6>Debug Information:</h6>
+        <div id="debugContent"></div>
+      </div>
+
       <form
         id="form"
         class="bg-dark text-light p-4 rounded shadow-lg border border-primary"
@@ -176,7 +192,7 @@
               type="text"
               class="form-control bg-secondary text-light border-0"
               id="firstName"
-              name="First Name"
+              name="firstName"
               required
             />
           </div>
@@ -186,7 +202,7 @@
               type="text"
               class="form-control bg-secondary text-light border-0"
               id="lastName"
-              name="Last Name"
+              name="lastName"
               required
             />
           </div>
@@ -198,7 +214,7 @@
               type="text"
               class="form-control bg-secondary text-light border-0"
               id="phonemail"
-              name="Phone/Email"
+              name="phonemail"
               required
             />
           </div>
@@ -208,7 +224,7 @@
               type="text"
               class="form-control bg-secondary text-light border-0"
               id="address"
-              name="Address"
+              name="address"
               placeholder="123 Main St, City, State"
               required
             />
@@ -219,7 +235,7 @@
               type="date"
               class="form-control bg-secondary text-light border-0"
               id="date"
-              name="Date"
+              name="date"
               required
             />
           </div>
@@ -229,7 +245,7 @@
               type="time"
               class="form-control bg-secondary text-light border-0"
               id="time"
-              name="Time"
+              name="time"
               required
             />
           </div>
@@ -239,7 +255,7 @@
             <select
               class="form-select bg-secondary text-light border-0"
               id="service"
-              name="Service"
+              name="service"
               required
             >
               <option value="" disabled selected>Choose one</option>
@@ -274,6 +290,13 @@
               id="cancel-button"
             >
               Cancel
+            </button>
+            <button
+              class="btn btn-secondary btn-sm ms-3"
+              type="button"
+              id="debug-button"
+            >
+              Toggle Debug
             </button>
           </div>
         </div>
@@ -312,12 +335,13 @@
         const form = document.getElementById("form");
         const submitButton = document.getElementById("submit-button");
         const cancelButton = document.getElementById("cancel-button");
+        const debugButton = document.getElementById("debug-button");
         const messageDiv = document.getElementById("message");
         const serviceSelect = document.getElementById("service");
         const priceDisplay = document.getElementById("priceDisplay");
-        const requirementsModal = new bootstrap.Modal(
-          document.getElementById("requirementsModal")
-        );
+        const debugInfo = document.getElementById("debugInfo");
+        const debugContent = document.getElementById("debugContent");
+
         const warning = document.createElement("p");
         warning.style.color = "red";
         warning.style.marginTop = "10px";
@@ -352,6 +376,20 @@
           "Tech Cleanup and Setup": "$34",
           "5 in 1 deal": "$69",
         };
+
+        // Debug function
+        function updateDebugInfo(info) {
+          debugContent.innerHTML = `
+            <strong>Last Action:</strong> ${new Date().toLocaleTimeString()}<br>
+            <strong>Info:</strong> ${JSON.stringify(info, null, 2)}
+          `;
+        }
+
+        // Debug toggle
+        debugButton.addEventListener("click", function () {
+          debugInfo.style.display =
+            debugInfo.style.display === "none" ? "block" : "none";
+        });
 
         // Check if a slot is already booked
         function checkAvailability() {
@@ -425,7 +463,7 @@
           timeInput.value = "00:00";
         });
 
-        // Form submission
+        // Form submission with better error handling
         form.addEventListener("submit", async function (e) {
           e.preventDefault();
 
@@ -442,7 +480,23 @@
           // Check all rules
           const isValid = validateDateTime() && checkAvailability();
           if (!isValid) {
-            requirementsModal.show();
+            updateDebugInfo({
+              error: "Validation failed",
+              isValid,
+              date: dateInput.value,
+              time: timeInput.value,
+            });
+            // Show requirements modal if it exists, otherwise just show alert
+            if (typeof bootstrap !== "undefined") {
+              const modal = new bootstrap.Modal(
+                document.getElementById("requirementsModal")
+              );
+              modal.show();
+            } else {
+              alert(
+                "Please select a weekend date (Saturday or Sunday), at least 3 days in advance, and a time between 10:00 AM and 6:00 PM on the hour."
+              );
+            }
             return;
           }
 
@@ -451,28 +505,63 @@
           messageDiv.style.backgroundColor = "beige";
           messageDiv.style.color = "black";
           submitButton.disabled = true;
-          submitButton.classList.add("is-loading");
 
           try {
-            const formData = new FormData(this);
-            const formDataObj = {};
-            for (let [key, value] of formData.entries()) {
-              formDataObj[key] = value;
-            }
+            // Collect form data with consistent naming
+            const formData = {
+              firstName: document.getElementById("firstName").value,
+              lastName: document.getElementById("lastName").value,
+              phonemail: document.getElementById("phonemail").value,
+              address: document.getElementById("address").value,
+              date: document.getElementById("date").value,
+              time: document.getElementById("time").value,
+              service: document.getElementById("service").value,
+            };
+
+            updateDebugInfo({ action: "Submitting", formData });
 
             const scriptURL =
               "https://script.google.com/macros/s/AKfycby6PFa8dA0TfC7KCW8zOV53tGxXSRy8bderBe_-_83rWhLVBZCC9SykhPZgEUkd7wXF/exec";
 
+            console.log("Sending data:", formData);
+
             const response = await fetch(scriptURL, {
-              redirect: "follow",
               method: "POST",
-              body: JSON.stringify(formDataObj),
+              mode: "cors",
               headers: {
-                "Content-Type": "text/plain;charset=utf-8",
+                "Content-Type": "application/json",
               },
+              body: JSON.stringify(formData),
             });
 
-            const data = await response.json();
+            updateDebugInfo({
+              action: "Response received",
+              status: response.status,
+              statusText: response.statusText,
+              headers: Object.fromEntries(response.headers.entries()),
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const responseText = await response.text();
+            console.log("Raw response:", responseText);
+
+            let data;
+            try {
+              data = JSON.parse(responseText);
+            } catch (parseError) {
+              console.error("JSON parse error:", parseError);
+              updateDebugInfo({
+                action: "Parse error",
+                error: parseError.message,
+                responseText: responseText,
+              });
+              throw new Error("Invalid response format from server");
+            }
+
+            updateDebugInfo({ action: "Success", data });
 
             if (data.status === "success") {
               messageDiv.textContent =
@@ -480,19 +569,23 @@
               messageDiv.style.backgroundColor = "#48c78e";
               messageDiv.style.color = "white";
               form.reset();
-              // Reset time to 00:00 after submit
               timeInput.value = "00:00";
+              priceDisplay.textContent = "";
             } else {
               throw new Error(data.message || "Submission failed");
             }
           } catch (error) {
             console.error("Error:", error);
+            updateDebugInfo({
+              action: "Error",
+              error: error.message,
+              stack: error.stack,
+            });
             messageDiv.textContent = "Error: " + error.message;
             messageDiv.style.backgroundColor = "#f14668";
             messageDiv.style.color = "white";
           } finally {
             submitButton.disabled = false;
-            submitButton.classList.remove("is-loading");
             setTimeout(() => {
               messageDiv.textContent = "";
               messageDiv.style.display = "none";
@@ -504,7 +597,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Bootstrap Modal for Requirements -->
     <!-- Bootstrap Modal for Requirements -->
     <div
       class="modal fade"
