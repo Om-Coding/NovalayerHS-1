@@ -1,801 +1,922 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎮 Epic Game Collection</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic Games Hub</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-      overflow-x: hidden;
-    }
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
 
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
-      animation: fadeInDown 1s ease-out;
-    }
+        .hero-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .header h1 {
-      font-size: 3.5rem;
-      font-weight: 900;
-      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-      background-size: 400% 400%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: gradientShift 3s ease-in-out infinite;
-      text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-      margin-bottom: 10px;
-    }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+            animation: float 20s ease-in-out infinite;
+        }
 
-    .header p {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 1.2rem;
-      font-weight: 300;
-    }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
 
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 30px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
 
-    .game-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
-      padding: 30px;
-      text-align: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-      animation: fadeInUp 0.8s ease-out forwards;
-      opacity: 0;
-    }
+        @keyframes glow {
+            from { text-shadow: 0 4px 20px rgba(240, 147, 251, 0.5); }
+            to { text-shadow: 0 4px 30px rgba(240, 147, 251, 0.8); }
+        }
 
-    .game-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.5s;
-    }
+        .game-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .game-card:hover::before {
-      left: 100%;
-    }
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
 
-    .game-card:hover {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      border-color: rgba(255, 255, 255, 0.4);
-    }
+        .game-card:hover::before {
+            animation: shine 0.8s ease-in-out;
+        }
 
-    .game-card h2 {
-      color: white;
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
 
-    .game-card p {
-      color: rgba(255, 255, 255, 0.8);
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: var(--accent);
+        }
 
-    .btn {
-      background: linear-gradient(45deg, #ff6b6b, #ee5a52);
-      border: none;
-      color: white;
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin: 5px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      position: relative;
-      overflow: hidden;
-    }
+        .game-canvas {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            background: rgba(0,0,0,0.3);
+            margin: 20px 0;
+        }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-      background: linear-gradient(45deg, #ee5a52, #ff6b6b);
-    }
+        .btn-game {
+            background: linear-gradient(45deg, var(--accent), var(--primary));
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .btn:active {
-      transform: translateY(0);
-    }
+        .btn-game::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
 
-    .btn-secondary {
-      background: linear-gradient(45deg, #4ecdc4, #44a08d);
-    }
+        .btn-game:hover::before {
+            left: 100%;
+        }
 
-    .btn-secondary:hover {
-      background: linear-gradient(45deg, #44a08d, #4ecdc4);
-    }
+        .btn-game:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(240, 147, 251, 0.4);
+        }
 
-    .btn-success {
-      background: linear-gradient(45deg, #96ceb4, #7fb069);
-    }
+        .score-display {
+            background: rgba(0,0,0,0.5);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
 
-    .btn-success:hover {
-      background: linear-gradient(45deg, #7fb069, #96ceb4);
-    }
+        .game-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
 
-    .btn-danger {
-      background: linear-gradient(45deg, #ff4757, #c44569);
-    }
+        .control-hint {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
 
-    .btn-danger:hover {
-      background: linear-gradient(45deg, #c44569, #ff4757);
-    }
-
-    .game-result {
-      color: #4ecdc4;
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-top: 15px;
-      text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
-      min-height: 1.5rem;
-    }
-
-    .score-display {
-      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin: 15px 0;
-    }
-
-    /* Snake Game Styles */
-    .snake-board {
-      width: 300px;
-      height: 300px;
-      background: rgba(0, 0, 0, 0.3);
-      margin: 20px auto;
-      position: relative;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-    }
-
-    .snake-cell {
-      position: absolute;
-      width: 15px;
-      height: 15px;
-      background: #4ecdc4;
-      border-radius: 2px;
-    }
-
-    .food-cell {
-      position: absolute;
-      width: 15px;
-      height: 15px;
-      background: #ff6b6b;
-      border-radius: 50%;
-      animation: pulse 1s infinite;
-    }
-
-    /* Tetris Styles */
-    .tetris-board {
-      width: 200px;
-      height: 400px;
-      background: rgba(0, 0, 0, 0.3);
-      margin: 20px auto;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-    }
-
-    /* Breakout Styles */
-    .breakout-canvas {
-      background: rgba(0, 0, 0, 0.3);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-      cursor: none;
-    }
-
-    /* Missile Command Styles */
-    .missile-canvas {
-      background: linear-gradient(to bottom, #001122, #003366);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-      cursor: crosshair;
-    }
-
-    /* Flappy Bird Styles */
-    .flappy-canvas {
-      background: linear-gradient(to bottom, #87CEEB, #98FB98);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    /* Memory Match Styles */
-    .memory-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      max-width: 320px;
-      margin: 20px auto;
-    }
-
-    .memory-card {
-      width: 70px;
-      height: 70px;
-      background: linear-gradient(45deg, #667eea, #764ba2);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      transform-style: preserve-3d;
-    }
-
-    .memory-card:hover {
-      transform: scale(1.05);
-    }
-
-    .memory-card.flipped {
-      transform: rotateY(180deg);
-    }
-
-    .memory-card .front, .memory-card .back {
-      position: absolute;
-      backface-visibility: hidden;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-    }
-
-    .memory-card .back {
-      background: rgba(255, 255, 255, 0.1);
-      transform: rotateY(180deg);
-    }
-
-    /* Typing Challenge Styles */
-    .typing-display {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 20px;
-      border-radius: 10px;
-      margin: 15px 0;
-      font-family: 'Courier New', monospace;
-      font-size: 16px;
-      line-height: 1.6;
-      color: white;
-      min-height: 100px;
-    }
-
-    .typing-input {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-      padding: 15px;
-      color: white;
-      font-family: 'Courier New', monospace;
-      font-size: 16px;
-      resize: none;
-    }
-
-    .typing-input:focus {
-      outline: none;
-      border-color: #4ecdc4;
-      box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
-    }
-
-    .correct-char {
-      background: rgba(78, 205, 196, 0.3);
-    }
-
-    .incorrect-char {
-      background: rgba(255, 107, 107, 0.3);
-    }
-
-    .current-char {
-      background: rgba(255, 255, 255, 0.3);
-      animation: blink 1s infinite;
-    }
-
-    /* Puzzle Slider Styles */
-    .puzzle-board {
-      width: 300px;
-      height: 300px;
-      background: rgba(0, 0, 0, 0.3);
-      margin: 20px auto;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      border-radius: 10px;
-      padding: 10px;
-    }
-
-    .puzzle-tile {
-      background: linear-gradient(45deg, #4ecdc4, #44a08d);
-      border: none;
-      color: white;
-      font-size: 24px;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .puzzle-tile:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .puzzle-tile.empty {
-      background: transparent;
-      cursor: default;
-    }
-
-    .puzzle-tile.empty:hover {
-      transform: none;
-      box-shadow: none;
-    }
-
-    /* Word Scramble Styles */
-    .scrambled-word {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #4ecdc4;
-      margin: 20px 0;
-      letter-spacing: 4px;
-      text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
-    }
-
-    .word-input {
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-      padding: 15px;
-      font-size: 18px;
-      color: white;
-      text-align: center;
-      width: 200px;
-      margin: 10px;
-    }
-
-    .word-input:focus {
-      outline: none;
-      border-color: #4ecdc4;
-      box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
-    }
-
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes gradientShift {
-      0%, 100% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.1);
-      }
-    }
-
-    @keyframes blink {
-      0%, 50% {
-        opacity: 1;
-      }
-      51%, 100% {
-        opacity: 0;
-      }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .games-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-      
-      .header h1 {
-        font-size: 2.5rem;
-      }
-      
-      .game-card {
-        padding: 20px;
-      }
-    }
-
-    /* Animation delays for staggered entrance */
-    .game-card:nth-child(1) { animation-delay: 0.1s; }
-    .game-card:nth-child(2) { animation-delay: 0.2s; }
-    .game-card:nth-child(3) { animation-delay: 0.3s; }
-    .game-card:nth-child(4) { animation-delay: 0.4s; }
-    .game-card:nth-child(5) { animation-delay: 0.5s; }
-    .game-card:nth-child(6) { animation-delay: 0.6s; }
-    .game-card:nth-child(7) { animation-delay: 0.7s; }
-    .game-card:nth-child(8) { animation-delay: 0.8s; }
-    .game-card:nth-child(9) { animation-delay: 0.9s; }
-    .game-card:nth-child(10) { animation-delay: 1.0s; }
-  </style>
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .game-card { padding: 20px; }
+        }
+    </style>
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="#home">
-      <i class="fas fa-brain me-2"></i>Logic Matters
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link active" href="#home">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#about">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#games">Scratch games</a>    
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#made">Om Made games</a>
-        </li>
-      </ul>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">
+                <i class="fas fa-gamepad me-3"></i>
+                Epic Games Hub
+            </h1>
+            <p class="lead">Play awesome games coded from scratch! No downloads required.</p>
+        </div>
     </div>
-  </div>
-</nav>
 
-<div class="header">
-  <h1>🎮 Epic Game Collection</h1>
-  <p>Immerse yourself in these addictive gaming experiences!</p>
-</div>
+    <!-- Games Section -->
+    <div class="container py-5">
+        <div class="row">
+            <!-- Snake Game -->
+            <div class="col-lg-6 col-md-12">
+                <div class="game-card">
+                    <h3><i class="fas fa-snake me-2" style="color: #4CAF50;"></i>Snake Game</h3>
+                    <p>Classic snake game with modern twist! Eat the food and grow longer.</p>
+                    <canvas id="snakeCanvas" class="game-canvas" width="400" height="400"></canvas>
+                    <div class="score-display">
+                        <i class="fas fa-trophy me-2"></i>Score: <span id="snakeScore">0</span>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-game me-2" onclick="startSnake()">
+                            <i class="fas fa-play me-2"></i>Start Game
+                        </button>
+                        <button class="btn btn-game" onclick="resetSnake()">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </button>
+                    </div>
+                    <div class="control-hint">
+                        <i class="fas fa-keyboard me-2"></i>Use Arrow Keys to Control
+                    </div>
+                </div>
+            </div>
 
-<div class="games-grid">
+            <!-- Pong Game -->
+            <div class="col-lg-6 col-md-12">
+                <div class="game-card">
+                    <h3><i class="fas fa-table-tennis me-2" style="color: #FF9800;"></i>Pong Classic</h3>
+                    <p>The original arcade classic! Beat the AI paddle.</p>
+                    <canvas id="pongCanvas" class="game-canvas" width="400" height="300"></canvas>
+                    <div class="score-display">
+                        <i class="fas fa-user me-2"></i>You: <span id="playerScore">0</span> | 
+                        <i class="fas fa-robot me-2"></i>AI: <span id="aiScore">0</span>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-game me-2" onclick="startPong()">
+                            <i class="fas fa-play me-2"></i>Start Game
+                        </button>
+                        <button class="btn btn-game" onclick="resetPong()">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </button>
+                    </div>
+                    <div class="control-hint">
+                        <i class="fas fa-mouse me-2"></i>Move Mouse to Control Paddle
+                    </div>
+                </div>
+            </div>
 
-  <!-- Game 1: Snake Game -->
-  <div class="game-card">
-    <h2>🐍 Classic Snake</h2>
-    <p>Eat the food, grow longer, don't hit the walls or yourself!</p>
-    <div class="snake-board" id="snake-board"></div>
-    <div class="score-display" id="snake-score">Score: 0 | High: 0</div>
-    <button class="btn" onclick="startSnake()">Start Game</button>
-    <button class="btn btn-secondary" onclick="pauseSnake()">Pause</button>
-  </div>
+            <!-- Breakout Game -->
+            <div class="col-lg-6 col-md-12">
+                <div class="game-card">
+                    <h3><i class="fas fa-th-large me-2" style="color: #E91E63;"></i>Breakout</h3>
+                    <p>Break all the bricks with your ball! Don't let it fall.</p>
+                    <canvas id="breakoutCanvas" class="game-canvas" width="400" height="400"></canvas>
+                    <div class="score-display">
+                        <i class="fas fa-star me-2"></i>Score: <span id="breakoutScore">0</span> | 
+                        <i class="fas fa-heart me-2"></i>Lives: <span id="breakoutLives">3</span>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-game me-2" onclick="startBreakout()">
+                            <i class="fas fa-play me-2"></i>Start Game
+                        </button>
+                        <button class="btn btn-game" onclick="resetBreakout()">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </button>
+                    </div>
+                    <div class="control-hint">
+                        <i class="fas fa-arrows-alt-h me-2"></i>Use Left/Right Arrow Keys
+                    </div>
+                </div>
+            </div>
 
-  <!-- Game 2: Breakout -->
-  <div class="game-card">
-    <h2>🏓 Breakout Blaster</h2>
-    <p>Break all the bricks with your paddle and ball!</p>
-    <canvas class="breakout-canvas" id="breakout-canvas" width="320" height="200"></canvas>
-    <div class="score-display" id="breakout-score">Score: 0 | Lives: 3</div>
-    <button class="btn" onclick="startBreakout()">Launch Ball</button>
-    <button class="btn btn-secondary" onclick="pauseBreakout()">Pause</button>
-  </div>
-
-  <!-- Game 3: Flappy Bird -->
-  <div class="game-card">
-    <h2>🐦 Flappy Challenge</h2>
-    <p>Navigate through the pipes by clicking to fly!</p>
-    <canvas class="flappy-canvas" id="flappy-canvas" width="300" height="200"></canvas>
-    <div class="score-display" id="flappy-score">Score: 0 | Best: 0</div>
-    <button class="btn" onclick="startFlappy()">Start Flying</button>
-    <p style="font-size: 12px; color: rgba(255,255,255,0.6);">Click canvas to flap!</p>
-  </div>
-
-  <!-- Game 4: Memory Match -->
-  <div class="game-card">
-    <h2>🧠 Memory Master</h2>
-    <p>Match all the pairs of emojis to win!</p>
-    <div class="memory-grid" id="memory-grid"></div>
-    <div class="score-display" id="memory-score">Moves: 0 | Time: 0s</div>
-    <button class="btn btn-success" onclick="startMemory()">New Game</button>
-    <button class="btn btn-secondary" onclick="showAllCards()">Peek (5s)</button>
-  </div>
-
-  <!-- Game 5: Missile Command -->
-  <div class="game-card">
-    <h2>🚀 Missile Command</h2>
-    <p>Defend your cities from incoming missiles!</p>
-    <canvas class="missile-canvas" id="missile-canvas" width="300" height="200"></canvas>
-    <div class="score-display" id="missile-score">Cities: 6 | Score: 0</div>
-    <button class="btn btn-danger" onclick="startMissiles()">Defend!</button>
-    <p style="font-size: 12px; color: rgba(255,255,255,0.6);">Click to fire!</p>
-  </div>
-
-  <!-- Game 6: Typing Speed Challenge -->
-  <div class="game-card">
-    <h2>⚡ Typing Lightning</h2>
-    <p>Type the text as fast and accurately as possible!</p>
-    <div class="typing-display" id="typing-display"></div>
-    <textarea class="typing-input" id="typing-input" placeholder="Start typing here..." rows="3"></textarea>
-    <div class="score-display" id="typing-score">WPM: 0 | Accuracy: 100%</div>
-    <button class="btn" onclick="startTyping()">New Challenge</button>
-    <button class="btn btn-secondary" onclick="pauseTyping()">Pause</button>
-  </div>
-
-  <!-- Game 7: Puzzle Slider -->
-  <div class="game-card">
-    <h2>🧩 Sliding Puzzle</h2>
-    <p>Arrange the numbers 1-8 in order!</p>
-    <div class="puzzle-board" id="puzzle-board"></div>
-    <div class="score-display" id="puzzle-score">Moves: 0 | Time: 0s</div>
-    <button class="btn btn-success" onclick="shufflePuzzle()">Shuffle</button>
-    <button class="btn btn-secondary" onclick="solvePuzzle()">Auto-Solve</button>
-  </div>
-
-  <!-- Game 8: Word Scramble -->
-  <div class="game-card">
-    <h2>📝 Word Unscrambler</h2>
-    <p>Unscramble the letters to form the correct word!</p>
-    <div class="scrambled-word" id="scrambled-word">LOADING...</div>
-    <input type="text" class="word-input" id="word-input" placeholder="Your answer">
-    <div class="score-display" id="word-score">Score: 0 | Streak: 0</div>
-    <button class="btn" onclick="checkWord()">Submit</button>
-    <button class="btn btn-secondary" onclick="newWord()">New Word</button>
-    <button class="btn btn-success" onclick="giveHint()">Hint</button>
-  </div>
-
-  <!-- Game 9: Reaction Speed Test -->
-  <div class="game-card">
-    <h2>⚡ Reaction Master</h2>
-    <p>Test your reflexes with multiple challenges!</p>
-    <div id="reaction-display" style="height:100px; background:rgba(0,0,0,0.3); border-radius:10px; display:flex; align-items:center; justify-content:center; margin:15px 0; font-size:24px;">
-      Ready?
+            <!-- Asteroid Game -->
+            <div class="col-lg-6 col-md-12">
+                <div class="game-card">
+                    <h3><i class="fas fa-rocket me-2" style="color: #2196F3;"></i>Space Shooter</h3>
+                    <p>Navigate through space and destroy asteroids!</p>
+                    <canvas id="asteroidCanvas" class="game-canvas" width="400" height="400"></canvas>
+                    <div class="score-display">
+                        <i class="fas fa-crosshairs me-2"></i>Score: <span id="asteroidScore">0</span> | 
+                        <i class="fas fa-heart me-2"></i>Lives: <span id="asteroidLives">3</span>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-game me-2" onclick="startAsteroid()">
+                            <i class="fas fa-play me-2"></i>Start Game
+                        </button>
+                        <button class="btn btn-game" onclick="resetAsteroid()">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </button>
+                    </div>
+                    <div class="control-hint">
+                        <i class="fas fa-keyboard me-2"></i>WASD to Move, Space to Shoot
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="score-display" id="reaction-score">Best: 0ms | Average: 0ms</div>
-    <button class="btn" onclick="startReactionTest()">Start Test</button>
-    <button class="btn btn-secondary" onclick="changeReactionMode()">Change Mode</button>
-  </div>
 
-  <!-- Game 10: Whack-a-Mole Evolution -->
-  <div class="game-card">
-    <h2>🔨 Mole Mayhem</h2>
-    <p>Advanced whack-a-mole with power-ups and combos!</p>
-    <canvas id="mole-canvas" width="300" height="200" style="background:rgba(0,0,0,0.3); border-radius:10px; cursor:crosshair;"></canvas>
-    <div class="score-display" id="mole-advanced-score">Score: 0 | Combo: 0x | Time: 30s</div>
-    <button class="btn" onclick="startAdvancedMole()">Start Hunt</button>
-    <button class="btn btn-success" onclick="upgradeMallet()">Upgrade Mallet</button>
-  </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Snake Game
+        let snakeGame = {
+            canvas: null,
+            ctx: null,
+            snake: [{x: 10, y: 10}],
+            food: {x: 15, y: 15},
+            dx: 0,
+            dy: 0,
+            score: 0,
+            running: false,
+            gameLoop: null
+        };
 
-</div>
+        function initSnake() {
+            snakeGame.canvas = document.getElementById('snakeCanvas');
+            snakeGame.ctx = snakeGame.canvas.getContext('2d');
+            
+            document.addEventListener('keydown', (e) => {
+                if (!snakeGame.running) return;
+                
+                const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40;
+                
+                if (e.keyCode === LEFT && snakeGame.dx === 0) { snakeGame.dx = -1; snakeGame.dy = 0; }
+                if (e.keyCode === UP && snakeGame.dy === 0) { snakeGame.dx = 0; snakeGame.dy = -1; }
+                if (e.keyCode === RIGHT && snakeGame.dx === 0) { snakeGame.dx = 1; snakeGame.dy = 0; }
+                if (e.keyCode === DOWN && snakeGame.dy === 0) { snakeGame.dx = 0; snakeGame.dy = 1; }
+            });
+        }
 
-<script>
-// Global game states
-const gameStates = {};
+        function startSnake() {
+            if (snakeGame.running) return;
+            snakeGame.running = true;
+            snakeGame.dx = 1;
+            snakeGame.dy = 0;
+            
+            snakeGame.gameLoop = setInterval(() => {
+                updateSnake();
+                drawSnake();
+            }, 100);
+        }
 
-// Game 1: Snake Game
-function startSnake() {
-  const board = document.getElementById('snake-board');
-  const scoreEl = document.getElementById('snake-score');
-  
-  // Initialize game state
-  gameStates.snake = {
-    snake: [{x: 150, y: 150}],
-    food: {x: 75, y: 75},
-    direction: {x: 15, y: 0},
-    score: 0,
-    highScore: parseInt(localStorage.getItem('snakeHigh') || '0'),
-    gameLoop: null,
-    paused: false
-  };
-  
-  board.innerHTML = '';
-  updateSnakeDisplay();
-  
-  // Game loop
-  gameStates.snake.gameLoop = setInterval(() => {
-    if (!gameStates.snake.paused) {
-      moveSnake();
-      checkSnakeCollisions();
-      updateSnakeDisplay();
-    }
-  }, 150);
-  
-  // Controls
-  document.addEventListener('keydown', handleSnakeControls);
-}
+        function updateSnake() {
+            const head = {x: snakeGame.snake[0].x + snakeGame.dx, y: snakeGame.snake[0].y + snakeGame.dy};
+            
+            // Check walls
+            if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
+                gameOverSnake();
+                return;
+            }
+            
+            // Check self collision
+            if (snakeGame.snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                gameOverSnake();
+                return;
+            }
+            
+            snakeGame.snake.unshift(head);
+            
+            // Check food
+            if (head.x === snakeGame.food.x && head.y === snakeGame.food.y) {
+                snakeGame.score += 10;
+                document.getElementById('snakeScore').textContent = snakeGame.score;
+                generateFood();
+            } else {
+                snakeGame.snake.pop();
+            }
+        }
 
-function moveSnake() {
-  const game = gameStates.snake;
-  const head = {
-    x: game.snake[0].x + game.direction.x,
-    y: game.snake[0].y + game.direction.y
-  };
-  
-  game.snake.unshift(head);
-  
-  // Check food collision
-  if (head.x === game.food.x && head.y === game.food.y) {
-    game.score += 10;
-    generateSnakeFood();
-  } else {
-    game.snake.pop();
-  }
-}
+        function drawSnake() {
+            snakeGame.ctx.fillStyle = 'rgba(26, 26, 46, 0.8)';
+            snakeGame.ctx.fillRect(0, 0, 400, 400);
+            
+            // Draw snake
+            snakeGame.ctx.fillStyle = '#4CAF50';
+            snakeGame.snake.forEach((segment, index) => {
+                if (index === 0) snakeGame.ctx.fillStyle = '#8BC34A'; // Head
+                else snakeGame.ctx.fillStyle = '#4CAF50';
+                
+                snakeGame.ctx.fillRect(segment.x * 20, segment.y * 20, 18, 18);
+            });
+            
+            // Draw food
+            snakeGame.ctx.fillStyle = '#FF5722';
+            snakeGame.ctx.fillRect(snakeGame.food.x * 20, snakeGame.food.y * 20, 18, 18);
+        }
 
-function checkSnakeCollisions() {
-  const game = gameStates.snake;
-  const head = game.snake[0];
-  
-  // Wall collision
-  if (head.x < 0 || head.x >= 300 || head.y < 0 || head.y >= 300) {
-    endSnakeGame();
-    return;
-  }
-  
-  // Self collision
-  for (let i = 1; i < game.snake.length; i++) {
-    if (head.x === game.snake[i].x && head.y === game.snake[i].y) {
-      endSnakeGame();
-      return;
-    }
-  }
-}
+        function generateFood() {
+            snakeGame.food = {
+                x: Math.floor(Math.random() * 20),
+                y: Math.floor(Math.random() * 20)
+            };
+        }
 
-function updateSnakeDisplay() {
-  const board = document.getElementById('snake-board');
-  const scoreEl = document.getElementById('snake-score');
-  const game = gameStates.snake;
-  
-  board.innerHTML = '';
-  
-  // Draw snake
-  game.snake.forEach((segment, index) => {
-    const div = document.createElement('div');
-    div.className = 'snake-cell';
-    div.style.left = segment.x + 'px';
-    div.style.top = segment.y + 'px';
-    if (index === 0) div.style.background = '#ff6b6b'; // Head
-    board.appendChild(div);
-  });
-  
-  // Draw food
-  const foodDiv = document.createElement('div');
-  foodDiv.className = 'food-cell';
-  foodDiv.style.left = game.food.x + 'px';
-  foodDiv.style.top = game.food.y + 'px';
-  board.appendChild(foodDiv);
-  
-  scoreEl.textContent = `Score: ${game.score} | High: ${game.highScore}`;
-}
+        function gameOverSnake() {
+            snakeGame.running = false;
+            clearInterval(snakeGame.gameLoop);
+            alert(`Game Over! Your score: ${snakeGame.score}`);
+        }
 
-function generateSnakeFood() {
-  const game = gameStates.snake;
-  game.food = {
-    x: Math.floor(Math.random() * 20) * 15,
-    y: Math.floor(Math.random() * 20) * 15
-  };
-}
+        function resetSnake() {
+            clearInterval(snakeGame.gameLoop);
+            snakeGame.snake = [{x: 10, y: 10}];
+            snakeGame.food = {x: 15, y: 15};
+            snakeGame.dx = 0;
+            snakeGame.dy = 0;
+            snakeGame.score = 0;
+            snakeGame.running = false;
+            document.getElementById('snakeScore').textContent = '0';
+            drawSnake();
+        }
 
-function handleSnakeControls(e) {
-  if (!gameStates.snake) return;
-  const game = gameStates.snake;
-  
-  switch(e.key) {
-    case 'ArrowUp':
-      if (game.direction.y === 0) game.direction = {x: 0, y: -15};
-      break;
-    case 'ArrowDown':
-      if (game.direction.y === 0) game.direction = {x: 0, y: 15};
-      break;
-    case 'ArrowLeft':
-      if (game.direction.x === 0) game.direction = {x: -15, y: 0};
-      break;
-    case 'ArrowRight':
-      if (game.direction.x === 0) game.direction = {x: 15, y: 0};
-      break;
-  }
-}
+        // Pong Game
+        let pongGame = {
+            canvas: null,
+            ctx: null,
+            ball: {x: 200, y: 150, dx: 4, dy: 4, radius: 8},
+            playerPaddle: {x: 10, y: 125, width: 10, height: 50},
+            aiPaddle: {x: 380, y: 125, width: 10, height: 50},
+            playerScore: 0,
+            aiScore: 0,
+            running: false,
+            gameLoop: null
+        };
 
-function endSnakeGame() {
-  const game = gameStates.snake;
-  clearInterval(game.gameLoop);
-  if (game.score > game.highScore) {
-    game.highScore = game.score;
-    // localStorage.setItem('snakeHigh', game.score.toString());
-    alert('🎉 New High Score! ' + game.score);
-  } else {
-    alert('Game Over! Score: ' + game.score);
-  }
-}
+        function initPong() {
+            pongGame.canvas = document.getElementById('pongCanvas');
+            pongGame.ctx = pongGame.canvas.getContext('2d');
+            
+            pongGame.canvas.addEventListener('mousemove', (e) => {
+                if (!pongGame.running) return;
+                const rect = pongGame.canvas.getBoundingClientRect();
+                pongGame.playerPaddle.y = e.clientY - rect.top - pongGame.playerPaddle.height / 2;
+            });
+        }
 
-function pauseSnake() {
-  if (gameStates.snake) {
-    gameStates.snake.paused = !gameStates.snake.paused;
-  }
-}
+        function startPong() {
+            if (pongGame.running) return;
+            pongGame.running = true;
+            
+            pongGame.gameLoop = setInterval(() => {
+                updatePong();
+                drawPong();
+            }, 16);
+        }
 
-// Game 2: Breakout
-function startBreakout() {
-  const canvas = document.getElementById('breakout-canvas');
-  const ctx = canvas.getContext('2d');
-  const scoreEl = document.getElementById('breakout-score');
-  
-  // Initialize game state
-  gameStates.breakout = {
-    ball: {x: 160, y: 150, dx: 3, dy: -3, radius: 8},
-    paddle: {x: 135, y: 180, width: 50, height: 8},
-    bricks: [],
-    score: 0,
-    lives: 3,
-    gameLoop: null,
-    paused: false
-  };
-  
-  // Create bricks
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col < 8; col++) {
-      gameStates.breakout.bricks.push({
-        x: col * 40,
-        y: row * 20 + 20,
-        width: 35,
-        height: 15,
-        visible: true,
-        color: `hsl(${row * 60}, 70%, 60%)`
-      });
-    }
-  }
-  
-  // Mouse controls
-  canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    gameStates.breakout.paddle.x = e.clientX - rect.left - gameStates.breakout.paddle.width / 2;
-  });
-  
-  // Game loop
-  gameStates.breakout.gameLoop = setInterval(() =>
+        function updatePong() {
+            // Move ball
+            pongGame.ball.x += pongGame.ball.dx;
+            pongGame.ball.y += pongGame.ball.dy;
+            
+            // Ball collision with top/bottom
+            if (pongGame.ball.y <= 0 || pongGame.ball.y >= 300) {
+                pongGame.ball.dy = -pongGame.ball.dy;
+            }
+            
+            // Ball collision with paddles
+            if (pongGame.ball.x <= 20 && 
+                pongGame.ball.y >= pongGame.playerPaddle.y && 
+                pongGame.ball.y <= pongGame.playerPaddle.y + pongGame.playerPaddle.height) {
+                pongGame.ball.dx = -pongGame.ball.dx;
+            }
+            
+            if (pongGame.ball.x >= 370 && 
+                pongGame.ball.y >= pongGame.aiPaddle.y && 
+                pongGame.ball.y <= pongGame.aiPaddle.y + pongGame.aiPaddle.height) {
+                pongGame.ball.dx = -pongGame.ball.dx;
+            }
+            
+            // Score
+            if (pongGame.ball.x < 0) {
+                pongGame.aiScore++;
+                document.getElementById('aiScore').textContent = pongGame.aiScore;
+                resetBall();
+            }
+            
+            if (pongGame.ball.x > 400) {
+                pongGame.playerScore++;
+                document.getElementById('playerScore').textContent = pongGame.playerScore;
+                resetBall();
+            }
+            
+            // AI paddle movement
+            if (pongGame.aiPaddle.y + pongGame.aiPaddle.height / 2 < pongGame.ball.y) {
+                pongGame.aiPaddle.y += 3;
+            } else {
+                pongGame.aiPaddle.y -= 3;
+            }
+        }
+
+        function drawPong() {
+            pongGame.ctx.fillStyle = 'rgba(26, 26, 46, 0.8)';
+            pongGame.ctx.fillRect(0, 0, 400, 300);
+            
+            // Draw center line
+            pongGame.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            pongGame.ctx.setLineDash([5, 5]);
+            pongGame.ctx.beginPath();
+            pongGame.ctx.moveTo(200, 0);
+            pongGame.ctx.lineTo(200, 300);
+            pongGame.ctx.stroke();
+            
+            // Draw paddles
+            pongGame.ctx.fillStyle = '#FF9800';
+            pongGame.ctx.fillRect(pongGame.playerPaddle.x, pongGame.playerPaddle.y, pongGame.playerPaddle.width, pongGame.playerPaddle.height);
+            pongGame.ctx.fillRect(pongGame.aiPaddle.x, pongGame.aiPaddle.y, pongGame.aiPaddle.width, pongGame.aiPaddle.height);
+            
+            // Draw ball
+            pongGame.ctx.fillStyle = '#fff';
+            pongGame.ctx.beginPath();
+            pongGame.ctx.arc(pongGame.ball.x, pongGame.ball.y, pongGame.ball.radius, 0, Math.PI * 2);
+            pongGame.ctx.fill();
+        }
+
+        function resetBall() {
+            pongGame.ball.x = 200;
+            pongGame.ball.y = 150;
+            pongGame.ball.dx = -pongGame.ball.dx;
+        }
+
+        function resetPong() {
+            clearInterval(pongGame.gameLoop);
+            pongGame.ball = {x: 200, y: 150, dx: 4, dy: 4, radius: 8};
+            pongGame.playerScore = 0;
+            pongGame.aiScore = 0;
+            pongGame.running = false;
+            document.getElementById('playerScore').textContent = '0';
+            document.getElementById('aiScore').textContent = '0';
+            drawPong();
+        }
+
+        // Breakout Game
+        let breakoutGame = {
+            canvas: null,
+            ctx: null,
+            ball: {x: 200, y: 350, dx: 4, dy: -4, radius: 8},
+            paddle: {x: 160, y: 380, width: 80, height: 10},
+            bricks: [],
+            score: 0,
+            lives: 3,
+            running: false,
+            gameLoop: null
+        };
+
+        function initBreakout() {
+            breakoutGame.canvas = document.getElementById('breakoutCanvas');
+            breakoutGame.ctx = breakoutGame.canvas.getContext('2d');
+            
+            // Create bricks
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 8; col++) {
+                    breakoutGame.bricks.push({
+                        x: col * 50,
+                        y: row * 20 + 30,
+                        width: 45,
+                        height: 15,
+                        active: true,
+                        color: `hsl(${row * 60}, 70%, 60%)`
+                    });
+                }
+            }
+            
+            document.addEventListener('keydown', (e) => {
+                if (!breakoutGame.running) return;
+                
+                if (e.code === 'ArrowLeft' && breakoutGame.paddle.x > 0) {
+                    breakoutGame.paddle.x -= 20;
+                }
+                if (e.code === 'ArrowRight' && breakoutGame.paddle.x < 320) {
+                    breakoutGame.paddle.x += 20;
+                }
+            });
+        }
+
+        function startBreakout() {
+            if (breakoutGame.running) return;
+            breakoutGame.running = true;
+            
+            breakoutGame.gameLoop = setInterval(() => {
+                updateBreakout();
+                drawBreakout();
+            }, 16);
+        }
+
+        function updateBreakout() {
+            // Move ball
+            breakoutGame.ball.x += breakoutGame.ball.dx;
+            breakoutGame.ball.y += breakoutGame.ball.dy;
+            
+            // Wall collisions
+            if (breakoutGame.ball.x <= 0 || breakoutGame.ball.x >= 400) {
+                breakoutGame.ball.dx = -breakoutGame.ball.dx;
+            }
+            
+            if (breakoutGame.ball.y <= 0) {
+                breakoutGame.ball.dy = -breakoutGame.ball.dy;
+            }
+            
+            // Paddle collision
+            if (breakoutGame.ball.y >= 370 && 
+                breakoutGame.ball.x >= breakoutGame.paddle.x && 
+                breakoutGame.ball.x <= breakoutGame.paddle.x + breakoutGame.paddle.width) {
+                breakoutGame.ball.dy = -breakoutGame.ball.dy;
+            }
+            
+            // Brick collisions
+            breakoutGame.bricks.forEach(brick => {
+                if (brick.active && 
+                    breakoutGame.ball.x >= brick.x && 
+                    breakoutGame.ball.x <= brick.x + brick.width &&
+                    breakoutGame.ball.y >= brick.y && 
+                    breakoutGame.ball.y <= brick.y + brick.height) {
+                    brick.active = false;
+                    breakoutGame.ball.dy = -breakoutGame.ball.dy;
+                    breakoutGame.score += 10;
+                    document.getElementById('breakoutScore').textContent = breakoutGame.score;
+                }
+            });
+            
+            // Ball out of bounds
+            if (breakoutGame.ball.y > 400) {
+                breakoutGame.lives--;
+                document.getElementById('breakoutLives').textContent = breakoutGame.lives;
+                
+                if (breakoutGame.lives <= 0) {
+                    gameOverBreakout();
+                } else {
+                    breakoutGame.ball.x = 200;
+                    breakoutGame.ball.y = 350;
+                    breakoutGame.ball.dy = -4;
+                }
+            }
+            
+            // Check win condition
+            if (breakoutGame.bricks.every(brick => !brick.active)) {
+                alert('You Win!');
+                resetBreakout();
+            }
+        }
+
+        function drawBreakout() {
+            breakoutGame.ctx.fillStyle = 'rgba(26, 26, 46, 0.8)';
+            breakoutGame.ctx.fillRect(0, 0, 400, 400);
+            
+            // Draw bricks
+            breakoutGame.bricks.forEach(brick => {
+                if (brick.active) {
+                    breakoutGame.ctx.fillStyle = brick.color;
+                    breakoutGame.ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                }
+            });
+            
+            // Draw paddle
+            breakoutGame.ctx.fillStyle = '#E91E63';
+            breakoutGame.ctx.fillRect(breakoutGame.paddle.x, breakoutGame.paddle.y, breakoutGame.paddle.width, breakoutGame.paddle.height);
+            
+            // Draw ball
+            breakoutGame.ctx.fillStyle = '#fff';
+            breakoutGame.ctx.beginPath();
+            breakoutGame.ctx.arc(breakoutGame.ball.x, breakoutGame.ball.y, breakoutGame.ball.radius, 0, Math.PI * 2);
+            breakoutGame.ctx.fill();
+        }
+
+        function gameOverBreakout() {
+            breakoutGame.running = false;
+            clearInterval(breakoutGame.gameLoop);
+            alert(`Game Over! Your score: ${breakoutGame.score}`);
+        }
+
+        function resetBreakout() {
+            clearInterval(breakoutGame.gameLoop);
+            breakoutGame.ball = {x: 200, y: 350, dx: 4, dy: -4, radius: 8};
+            breakoutGame.score = 0;
+            breakoutGame.lives = 3;
+            breakoutGame.running = false;
+            
+            // Reset bricks
+            breakoutGame.bricks.forEach(brick => brick.active = true);
+            
+            document.getElementById('breakoutScore').textContent = '0';
+            document.getElementById('breakoutLives').textContent = '3';
+            drawBreakout();
+        }
+
+        // Asteroid Game
+        let asteroidGame = {
+            canvas: null,
+            ctx: null,
+            ship: {x: 200, y: 200, angle: 0, dx: 0, dy: 0},
+            bullets: [],
+            asteroids: [],
+            score: 0,
+            lives: 3,
+            running: false,
+            gameLoop: null,
+            keys: {}
+        };
+
+        function initAsteroid() {
+            asteroidGame.canvas = document.getElementById('asteroidCanvas');
+            asteroidGame.ctx = asteroidGame.canvas.getContext('2d');
+            
+            // Create initial asteroids
+            for (let i = 0; i < 5; i++) {
+                asteroidGame.asteroids.push({
+                    x: Math.random() * 400,
+                    y: Math.random() * 400,
+                    dx: (Math.random() - 0.5) * 4,
+                    dy: (Math.random() - 0.5) * 4,
+                    size: 30,
+                    active: true
+                });
+            }
+            
+            document.addEventListener('keydown', (e) => {
+                asteroidGame.keys[e.code] = true;
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                asteroidGame.keys[e.code] = false;
+            });
+        }
+
+        function startAsteroid() {
+            if (asteroidGame.running) return;
+            asteroidGame.running = true;asteroidGame.gameLoop = setInterval(() => {
+                updateAsteroid();
+                drawAsteroid();
+            }, 16);
+        }
+
+        function updateAsteroid() {
+            // Ship controls
+            if (asteroidGame.keys['KeyW']) {
+                asteroidGame.ship.dx += Math.cos(asteroidGame.ship.angle) * 0.3;
+                asteroidGame.ship.dy += Math.sin(asteroidGame.ship.angle) * 0.3;
+            }
+            if (asteroidGame.keys['KeyA']) {
+                asteroidGame.ship.angle -= 0.1;
+            }
+            if (asteroidGame.keys['KeyD']) {
+                asteroidGame.ship.angle += 0.1;
+            }
+            if (asteroidGame.keys['Space']) {
+                // Shoot bullet
+                asteroidGame.bullets.push({
+                    x: asteroidGame.ship.x,
+                    y: asteroidGame.ship.y,
+                    dx: Math.cos(asteroidGame.ship.angle) * 8,
+                    dy: Math.sin(asteroidGame.ship.angle) * 8,
+                    life: 60
+                });
+                asteroidGame.keys['Space'] = false; // Prevent rapid fire
+            }
+            
+            // Apply friction
+            asteroidGame.ship.dx *= 0.99;
+            asteroidGame.ship.dy *= 0.99;
+            
+            // Move ship
+            asteroidGame.ship.x += asteroidGame.ship.dx;
+            asteroidGame.ship.y += asteroidGame.ship.dy;
+            
+            // Wrap around screen
+            if (asteroidGame.ship.x < 0) asteroidGame.ship.x = 400;
+            if (asteroidGame.ship.x > 400) asteroidGame.ship.x = 0;
+            if (asteroidGame.ship.y < 0) asteroidGame.ship.y = 400;
+            if (asteroidGame.ship.y > 400) asteroidGame.ship.y = 0;
+            
+            // Update bullets
+            asteroidGame.bullets = asteroidGame.bullets.filter(bullet => {
+                bullet.x += bullet.dx;
+                bullet.y += bullet.dy;
+                bullet.life--;
+                return bullet.life > 0 && bullet.x > 0 && bullet.x < 400 && bullet.y > 0 && bullet.y < 400;
+            });
+            
+            // Update asteroids
+            asteroidGame.asteroids.forEach(asteroid => {
+                if (asteroid.active) {
+                    asteroid.x += asteroid.dx;
+                    asteroid.y += asteroid.dy;
+                    
+                    // Wrap around
+                    if (asteroid.x < 0) asteroid.x = 400;
+                    if (asteroid.x > 400) asteroid.x = 0;
+                    if (asteroid.y < 0) asteroid.y = 400;
+                    if (asteroid.y > 400) asteroid.y = 0;
+                }
+            });
+            
+            // Collision detection - bullets vs asteroids
+            asteroidGame.bullets.forEach((bullet, bulletIndex) => {
+                asteroidGame.asteroids.forEach((asteroid, asteroidIndex) => {
+                    if (asteroid.active) {
+                        const dx = bullet.x - asteroid.x;
+                        const dy = bullet.y - asteroid.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < asteroid.size) {
+                            // Hit!
+                            asteroid.active = false;
+                            asteroidGame.bullets.splice(bulletIndex, 1);
+                            asteroidGame.score += 100;
+                            document.getElementById('asteroidScore').textContent = asteroidGame.score;
+                        }
+                    }
+                });
+            });
+            
+            // Collision detection - ship vs asteroids
+            asteroidGame.asteroids.forEach(asteroid => {
+                if (asteroid.active) {
+                    const dx = asteroidGame.ship.x - asteroid.x;
+                    const dy = asteroidGame.ship.y - asteroid.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < asteroid.size) {
+                        asteroidGame.lives--;
+                        document.getElementById('asteroidLives').textContent = asteroidGame.lives;
+                        
+                        // Respawn ship
+                        asteroidGame.ship.x = 200;
+                        asteroidGame.ship.y = 200;
+                        asteroidGame.ship.dx = 0;
+                        asteroidGame.ship.dy = 0;
+                        
+                        if (asteroidGame.lives <= 0) {
+                            gameOverAsteroid();
+                        }
+                    }
+                }
+            });
+            
+            // Check if all asteroids destroyed
+            if (asteroidGame.asteroids.every(asteroid => !asteroid.active)) {
+                // Spawn new wave
+                for (let i = 0; i < 3; i++) {
+                    asteroidGame.asteroids.push({
+                        x: Math.random() * 400,
+                        y: Math.random() * 400,
+                        dx: (Math.random() - 0.5) * 4,
+                        dy: (Math.random() - 0.5) * 4,
+                        size: 30,
+                        active: true
+                    });
+                }
+            }
+        }
+
+        function drawAsteroid() {
+            asteroidGame.ctx.fillStyle = 'rgba(26, 26, 46, 0.8)';
+            asteroidGame.ctx.fillRect(0, 0, 400, 400);
+            
+            // Draw ship
+            asteroidGame.ctx.save();
+            asteroidGame.ctx.translate(asteroidGame.ship.x, asteroidGame.ship.y);
+            asteroidGame.ctx.rotate(asteroidGame.ship.angle);
+            asteroidGame.ctx.fillStyle = '#2196F3';
+            asteroidGame.ctx.beginPath();
+            asteroidGame.ctx.moveTo(15, 0);
+            asteroidGame.ctx.lineTo(-10, -8);
+            asteroidGame.ctx.lineTo(-5, 0);
+            asteroidGame.ctx.lineTo(-10, 8);
+            asteroidGame.ctx.closePath();
+            asteroidGame.ctx.fill();
+            asteroidGame.ctx.restore();
+            
+            // Draw bullets
+            asteroidGame.ctx.fillStyle = '#FFD700';
+            asteroidGame.bullets.forEach(bullet => {
+                asteroidGame.ctx.beginPath();
+                asteroidGame.ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
+                asteroidGame.ctx.fill();
+            });
+            
+            // Draw asteroids
+            asteroidGame.ctx.strokeStyle = '#8BC34A';
+            asteroidGame.ctx.lineWidth = 2;
+            asteroidGame.asteroids.forEach(asteroid => {
+                if (asteroid.active) {
+                    asteroidGame.ctx.beginPath();
+                    asteroidGame.ctx.arc(asteroid.x, asteroid.y, asteroid.size, 0, Math.PI * 2);
+                    asteroidGame.ctx.stroke();
+                }
+            });
+        }
+
+        function gameOverAsteroid() {
+            asteroidGame.running = false;
+            clearInterval(asteroidGame.gameLoop);
+            alert(`Game Over! Your score: ${asteroidGame.score}`);
+        }
+
+        function resetAsteroid() {
+            clearInterval(asteroidGame.gameLoop);
+            asteroidGame.ship = {x: 200, y: 200, angle: 0, dx: 0, dy: 0};
+            asteroidGame.bullets = [];
+            asteroidGame.asteroids = [];
+            asteroidGame.score = 0;
+            asteroidGame.lives = 3;
+            asteroidGame.running = false;
+            asteroidGame.keys = {};
+            
+            // Create initial asteroids
+            for (let i = 0; i < 5; i++) {
+                asteroidGame.asteroids.push({
+                    x: Math.random() * 400,
+                    y: Math.random() * 400,
+                    dx: (Math.random() - 0.5) * 4,
+                    dy: (Math.random() - 0.5) * 4,
+                    size: 30,
+                    active: true
+                });
+            }
+            
+            document.getElementById('asteroidScore').textContent = '0';
+            document.getElementById('asteroidLives').textContent = '3';
+            drawAsteroid();
+        }
+
+        // Initialize all games when page loads
+        window.addEventListener('load', () => {
+            initSnake();
+            initPong();
+            initBreakout();
+            initAsteroid();
+            
+            // Draw initial game states
+            drawSnake();
+            drawPong();
+            drawBreakout();
+            drawAsteroid();
+        });
+    </script>
+</body>
+</html>
