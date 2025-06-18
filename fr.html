@@ -917,6 +917,103 @@
             drawBreakout();
             drawAsteroid();
         });
+        // Replace the existing keydown event listeners with this improved version:
+
+// Global key handler to prevent conflicts and default behaviors
+document.addEventListener('keydown', (e) => {
+    // Prevent default behavior for arrow keys and space
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+        e.preventDefault();
+    }
+    
+    // Snake Game Controls
+    if (snakeGame.running) {
+        if (e.code === 'ArrowLeft' && snakeGame.dx === 0) { 
+            snakeGame.dx = -1; 
+            snakeGame.dy = 0; 
+        }
+        if (e.code === 'ArrowUp' && snakeGame.dy === 0) { 
+            snakeGame.dx = 0; 
+            snakeGame.dy = -1; 
+        }
+        if (e.code === 'ArrowRight' && snakeGame.dx === 0) { 
+            snakeGame.dx = 1; 
+            snakeGame.dy = 0; 
+        }
+        if (e.code === 'ArrowDown' && snakeGame.dy === 0) { 
+            snakeGame.dx = 0; 
+            snakeGame.dy = 1; 
+        }
+    }
+    
+    // Breakout Game Controls
+    if (breakoutGame.running) {
+        if (e.code === 'ArrowLeft' && breakoutGame.paddle.x > 0) {
+            breakoutGame.paddle.x -= 20;
+        }
+        if (e.code === 'ArrowRight' && breakoutGame.paddle.x < 320) {
+            breakoutGame.paddle.x += 20;
+        }
+    }
+    
+    // Asteroid Game Controls
+    if (asteroidGame.running) {
+        asteroidGame.keys[e.code] = true;
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    // Asteroid Game Controls
+    if (asteroidGame.running) {
+        asteroidGame.keys[e.code] = false;
+    }
+});
+
+// Updated initialization functions without duplicate event listeners:
+
+function initSnake() {
+    snakeGame.canvas = document.getElementById('snakeCanvas');
+    snakeGame.ctx = snakeGame.canvas.getContext('2d');
+    // Removed the keydown event listener from here since it's now global
+}
+
+function initBreakout() {
+    breakoutGame.canvas = document.getElementById('breakoutCanvas');
+    breakoutGame.ctx = breakoutGame.canvas.getContext('2d');
+    
+    // Create bricks
+    for (let row = 0; row < 5; row++) {
+        for (let col = 0; col < 8; col++) {
+            breakoutGame.bricks.push({
+                x: col * 50,
+                y: row * 20 + 30,
+                width: 45,
+                height: 15,
+                active: true,
+                color: `hsl(${row * 60}, 70%, 60%)`
+            });
+        }
+    }
+    // Removed the keydown event listener from here since it's now global
+}
+
+function initAsteroid() {
+    asteroidGame.canvas = document.getElementById('asteroidCanvas');
+    asteroidGame.ctx = asteroidGame.canvas.getContext('2d');
+    
+    // Create initial asteroids
+    for (let i = 0; i < 5; i++) {
+        asteroidGame.asteroids.push({
+            x: Math.random() * 400,
+            y: Math.random() * 400,
+            dx: (Math.random() - 0.5) * 4,
+            dy: (Math.random() - 0.5) * 4,
+            size: 30,
+            active: true
+        });
+    }
+    // Removed the duplicate keydown/keyup listeners since they're now global
+}
     </script>
 </body>
 </html>
