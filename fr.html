@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎮 Epic Game Collection</title>
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAYAAAB/HSuDAADSo2NhQlgAANKjanVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNj...">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInDown 1s ease-out;
+    }
+
+    .header h1 {
+      font-size: 3.5rem;
+      font-weight: 900;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 3s ease-in-out infinite;
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.2rem;
+      font-weight: 300;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .game-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.8s ease-out forwards;
+      opacity: 0;
+    }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .game-card:hover::before {
+      left: 100%;
+    }
+
+    .game-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .game-card h2 {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-card p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 5px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(45deg, #ee5a52, #ff6b6b);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(45deg, #4ecdc4, #44a08d);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(45deg, #44a08d, #4ecdc4);
+    }
+
+    .btn-success {
+      background: linear-gradient(45deg, #96ceb4, #7fb069);
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(45deg, #7fb069, #96ceb4);
+    }
+
+    input, select, textarea {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 16px;
+      color: white;
+      margin: 5px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #4ecdc4;
+      box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .game-result {
+      color: #4ecdc4;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 15px;
+      text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+      min-height: 1.5rem;
+    }
+
+    .mole-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 250px;
+      margin: 20px auto;
+    }
+
+    .mole-hole {
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mole-hole:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .rps-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .rps-btn {
+      padding: 8px 12px;
+      font-size: 14px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      border: none;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .rps-btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(45deg, #764ba2, #667eea);
+    }
+
+    .color-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .color-btn {
+      width: 60px;
+      height: 60px;
+      border: 3px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .color-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .flash-display {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-display {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 15px 0;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes gradientShift {
+      0%, 100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .animate-pulse {
+      animation: pulse 1s infinite;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .games-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .rps-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .game-card {
+        padding: 20px;
+      }
+    }
+
+    /* Animation delays for staggered entrance */
+    .game-card:nth-child(1) { animation-delay: 0.1s; }
+    .game-card:nth-child(2) { animation-delay: 0.2s; }
+    .game-card:nth-child(3) { animation-delay: 0.3s; }
+    .game-card:nth-child(4) { animation-delay: 0.4s; }
+    .game-card:nth-child(5) { animation-delay: 0.5s; }
+    .game-card:nth-child(6) { animation-delay: 0.6s; }
+    .game-card:nth-child(7) { animation-delay: 0.7s; }
+    .game-card:nth-child(8) { animation-delay: 0.8s; }
+    .game-card:nth-child(9) { animation-delay: 0.9s; }
+    .game-card:nth-child(10) { animation-delay: 1.0s; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="home.html">
+                <i class="fas fa-brain me-2"></i>Logic Matters
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="games.html">Scratch games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="fr.html">"Om" Made games</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+
+
+
+  <div class="header">
+  <h1>🎮 Epic Game Collection</h1>
+  <p>Challenge yourself with these amazing mini-games!</p>
+</div>
+
+<div class="games-grid">
+
+  <!-- Game 1: Click Counter -->
+  <div class="game-card">
+    <h2>⚡ Click Counter Challenge</h2>
+    <p>How many clicks can you make in 5 seconds?</p>
+    <button class="btn" onclick="startClickGame()">Start Challenge</button>
+    <div class="score-display" id="click-count">Clicks: 0</div>
+  </div>
+
+  <!-- Game 2: Guess the Number -->
+  <div class="game-card">
+    <h2>🎯 Number Guesser</h2>
+    <p>Can you guess the secret number between 1-20?</p>
+    <input type="number" id="guess-input" min="1" max="20" placeholder="Enter your guess" />
+    <button class="btn btn-secondary" onclick="checkGuess()">Make Guess</button>
+    <div class="game-result" id="guess-result"></div>
+  </div>
+
+  <!-- Game 3: Rock Paper Scissors (15) -->
+  <div class="game-card">
+    <h2>✂️ Epic RPS Battle</h2>
+    <p>Rock Paper Scissors with 15 different choices!</p>
+    <div class="rps-grid" id="rps15-buttons"></div>
+    <div class="game-result" id="rps15-result"></div>
+  </div>
+
+  <!-- Game 4: Memory Color -->
+  <div class="game-card">
+    <h2>🌈 Color Memory</h2>
+    <p>Remember the flashed color and click it!</p>
+    <div class="color-buttons">
+      <button class="color-btn" style="background:#ff4757;" onclick="checkColor('red')"></button>
+      <button class="color-btn" style="background:#3742fa;" onclick="checkColor('blue')"></button>
+      <button class="color-btn" style="background:#2ed573;" onclick="checkColor('green')"></button>
+    </div>
+    <div class="flash-display" id="color-flash">Ready to start?</div>
+    <button class="btn btn-success" onclick="startColorGame()">Flash Color</button>
+    <div class="game-result" id="color-result"></div>
+  </div>
+
+  <!-- Game 5: Coin Flip -->
+  <div class="game-card">
+    <h2>🪙 Lucky Coin</h2>
+    <p>Flip a coin and test your luck!</p>
+    <button class="btn" onclick="flipCoin()">Flip Coin</button>
+    <div class="game-result" id="coin-result"></div>
+  </div>
+
+  <!-- Game 6: Dice Roller -->
+  <div class="game-card">
+    <h2>🎲 Magic Dice</h2>
+    <p>Roll the dice and see what you get!</p>
+    <button class="btn btn-secondary" onclick="rollDie()">Roll Dice</button>
+    <div class="game-result" id="die-result"></div>
+  </div>
+
+  <!-- Game 7: Whack-a-Mole -->
+  <div class="game-card">
+    <h2>🐹 Whack-a-Mole</h2>
+    <p>Quick! Catch the mole before it escapes!</p>
+    <div class="mole-grid" id="mole-grid"></div>
+    <div class="score-display" id="mole-score">Score: 0</div>
+    <button class="btn btn-success" onclick="startMole()">Start Hunt</button>
+  </div>
+
+  <!-- Game 8: Quick Math Challenge -->
+  <div class="game-card">
+    <h2>🧮 Math Lightning</h2>
+    <p>Solve math problems as fast as you can!</p>
+    <div class="flash-display" id="math-question"></div>
+    <input type="number" id="math-answer" placeholder="Your answer" />
+    <button class="btn" onclick="checkMath()">Check Answer</button>
+    <button class="btn btn-secondary" onclick="newMath()">New Problem</button>
+    <div class="game-result" id="math-result"></div>
+  </div>
+
+  <!-- Game 9: Typing Speed Test -->
+  <div class="game-card">
+    <h2>⌨️ Speed Typing</h2>
+    <p>Type the sentence as fast and accurately as possible!</p>
+    <div class="flash-display" id="typing-sentence"></div>
+    <textarea id="typing-box" rows="3" placeholder="Type the sentence here..."></textarea>
+    <div>
+      <button class="btn btn-success" onclick="startTyping()">New Sentence</button>
+      <button class="btn" onclick="checkTyping()">Check Speed</button>
+    </div>
+    <div class="game-result" id="typing-result"></div>
+  </div>
+
+  <!-- Game 10: Reaction Time -->
+  <div class="game-card">
+    <h2>⚡ Reaction Master</h2>
+    <div class="game-result" id="reaction-instructions">Click "Start" and wait for green!</div>
+    <button class="btn" id="reaction-button" onclick="startReaction()">Start Test</button>
+    <div class="game-result" id="reaction-result"></div>
+  </div>
+
+</div>
+
+<script>
+  // Game 1: Click Counter
+  let clickCount = 0;
+  function startClickGame() {
+    clickCount = 0;
+    document.getElementById("click-count").innerText = "Clicks: 0";
+    let end = Date.now() + 5000;
+    const oldClick = document.body.onclick;
+    
+    document.body.onclick = function (e) {
+      if (Date.now() < end && e.target.tagName !== 'BUTTON') {
+        clickCount++;
+        document.getElementById("click-count").innerText = "Clicks: " + clickCount;
+        
+        // Visual feedback
+        const ripple = document.createElement('div');
+        ripple.style.position = 'fixed';
+        ripple.style.left = e.clientX + 'px';
+        ripple.style.top = e.clientY + 'px';
+        ripple.style.width = '20px';
+        ripple.style.height = '20px';
+        ripple.style.borderRadius = '50%';
+        ripple.style.background = '#4ecdc4';
+        ripple.style.transform = 'translate(-50%, -50%)';
+        ripple.style.animation = 'pulse 0.3s ease-out';
+        ripple.style.pointerEvents = 'none';
+        ripple.style.zIndex = '9999';
+        document.body.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 300);
+      }
+    };
+    
+    setTimeout(() => {
+      document.body.onclick = oldClick;
+      alert(`🎉 Time's up! You clicked ${clickCount} times!`);
+    }, 5000);
+  }
+
+  // Game 2: Guess the Number
+  let secret = Math.floor(Math.random() * 20) + 1;
+  function checkGuess() {
+    const guess = parseInt(document.getElementById("guess-input").value);
+    const result = document.getElementById("guess-result");
+    if (isNaN(guess)) {
+      result.innerText = "Please enter a valid number!";
+      result.style.color = "#ff6b6b";
+      return;
+    }
+    if (guess === secret) {
+      result.innerText = "🎉 Correct! Starting new game...";
+      result.style.color = "#2ed573";
+      setTimeout(() => {
+        secret = Math.floor(Math.random() * 20) + 1;
+        result.innerText = "";
+        document.getElementById("guess-input").value = "";
+      }, 2000);
+    } else {
+      result.innerText = guess > secret ? "📉 Too high!" : "📈 Too low!";
+      result.style.color = "#ffa502";
+    }
+  }
+
+  // Game 3: Rock Paper Scissors (15)
+  const rpsChoices = [
+    "Rock","Paper","Scissors","Lizard","Spock","Fire","Water","Air",
+    "Sponge","Wolf","Tree","Human","Snake","Gun","Lightning"
+  ];
+  const rpsWins = {
+    Rock: ["Scissors","Lizard","Fire","Sponge","Wolf","Snake","Gun"],
+    Paper: ["Rock","Spock","Water","Air","Tree","Human","Lightning"],
+    Scissors: ["Paper","Lizard","Air","Sponge","Snake","Tree","Human"],
+    Lizard: ["Paper","Spock","Tree","Wolf","Gun","Human","Water"],
+    Spock: ["Rock","Scissors","Fire","Gun","Snake","Lightning","Air"],
+    Fire: ["Scissors","Paper","Sponge","Tree","Human","Wolf","Lizard"],
+    Water: ["Rock","Fire","Spock","Gun","Lightning","Scissors","Tree"],
+    Air: ["Water","Fire","Rock","Snake","Wolf","Gun","Lizard"],
+    Sponge: ["Water","Air","Spock","Gun","Rock","Lightning","Snake"],
+    Wolf: ["Sponge","Tree","Snake","Human","Gun","Air","Paper"],
+    Tree: ["Air","Water","Lightning","Gun","Rock","Scissors","Human"],
+    Human: ["Spock","Snake","Wolf","Paper","Air","Lizard","Lightning"],
+    Snake: ["Lizard","Human","Wolf","Sponge","Tree","Paper","Gun"],
+    Gun: ["Human","Wolf","Tree","Sponge","Air","Paper","Scissors"],
+    Lightning: ["Gun","Snake","Tree","Air","Fire","Wolf","Rock"]
+  };
+  
+  function playRPS(choice) {
+    const comp = rpsChoices[Math.floor(Math.random() * 15)];
+    let result = "";
+    if (choice === comp) {
+      result = "🤝 It's a tie!";
+    } else if (rpsWins[choice].includes(comp)) {
+      result = `🎉 You Win! ${choice} beats ${comp}`;
+    } else {
+      result = `😔 You Lose! ${comp} beats ${choice}`;
+    }
+    document.getElementById("rps15-result").innerText = result;
+  }
+  
+  const rpsButtons = document.getElementById("rps15-buttons");
+  rpsChoices.forEach(choice => {
+    const btn = document.createElement("button");
+    btn.innerText = choice;
+    btn.className = "rps-btn";
+    btn.onclick = () => playRPS(choice);
+    rpsButtons.appendChild(btn);
+  });
+
+  // Game 4: Memory Color
+  const colorSet = ["red", "blue", "green"];
+  let flashColor = "";
+  
+  function startColorGame() {
+    flashColor = colorSet[Math.floor(Math.random() * 3)];
+    const flashEl = document.getElementById("color-flash");
+    const colorNames = {red: "🔴 Red", blue: "🔵 Blue", green: "🟢 Green"};
+    
+    flashEl.innerText = "Watch carefully...";
+    flashEl.style.background = "rgba(255, 255, 255, 0.1)";
+    
+    setTimeout(() => {
+      flashEl.innerText = colorNames[flashColor];
+      flashEl.style.background = flashColor === "red" ? "#ff4757" : 
+                                 flashColor === "blue" ? "#3742fa" : "#2ed573";
+      flashEl.classList.add("animate-pulse");
+    }, 1000);
+    
+    setTimeout(() => {
+      flashEl.innerText = "Now click the color!";
+      flashEl.style.background = "rgba(255, 255, 255, 0.1)";
+      flashEl.classList.remove("animate-pulse");
+    }, 2500);
+  }
+  
+  function checkColor(color) {
+    const result = document.getElementById("color-result");
+    if (color === flashColor) {
+      result.innerText = "🎉 Perfect memory!";
+      result.style.color = "#2ed573";
+    } else {
+      result.innerText = "❌ Try again!";
+      result.style.color = "#ff6b6b";
+    }
+  }
+
+  // Game 5: Coin Flip
+  function flipCoin() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerText = "Flipping...";
+    
+    setTimeout(() => {
+      const result = Math.random() < 0.5 ? "Heads" : "Tails";
+      const emoji = result === "Heads" ? "👑" : "⚡";
+      document.getElementById("coin-result").innerText = `${emoji} ${result}!`;
+      btn.disabled = false;
+      btn.innerText = "Flip Coin";
+    }, 1000);
+  }
+
+  // Game 6: Dice Roller
+  function rollDie() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerText = "Rolling...";
+    
+    setTimeout(() => {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      const diceEmoji = ["⚀","⚁","⚂","⚃","⚄","⚅"][roll-1];
+      document.getElementById("die-result").innerText = `${diceEmoji} You rolled: ${roll}`;
+      btn.disabled = false;
+      btn.innerText = "Roll Dice";
+    }, 800);
+  }
+
+  // Game 7: Whack-a-Mole
+  let moleScore = 0;
+  function startMole() {
+    const grid = document.getElementById("mole-grid");
+    moleScore = 0;
+    grid.innerHTML = "";
+    
+    for (let i = 0; i < 9; i++) {
+      const div = document.createElement("button");
+      div.innerText = "🕳️";
+      div.className = "mole-hole";
+      div.onclick = () => {
+        if (div.innerText === "🐹") {
+          moleScore++;
+          document.getElementById("mole-score").innerText = "Score: " + moleScore;
+          div.innerText = "💥";
+          setTimeout(() => startMole(), 500);
+        }
+      };
+      grid.appendChild(div);
+    }
+    
+    const mole = Math.floor(Math.random() * 9);
+    grid.children[mole].innerText = "🐹";
+    
+    setTimeout(() => {
+      if (grid.children[mole].innerText === "🐹") {
+        startMole(); // Mole escaped
+      }
+    }, 2000);
+  }
+
+  // Game 8: Math Challenge
+  let a = 0, b = 0;
+  function newMath() {
+    a = Math.floor(Math.random() * 10) + 1;
+    b = Math.floor(Math.random() * 10) + 1;
+    document.getElementById("math-question").innerText = `What is ${a} + ${b}?`;
+    document.getElementById("math-answer").value = "";
+    document.getElementById("math-result").innerText = "";
+  }
+  
+  function checkMath() {
+    const ans = parseInt(document.getElementById("math-answer").value);
+    const result = document.getElementById("math-result");
+    if (isNaN(ans)) {
+      result.innerText = "Please enter a number!";
+      result.style.color = "#ff6b6b";
+      return;
+    }
+    if (ans === a + b) {
+      result.innerText = "🎉 Correct!";
+      result.style.color = "#2ed573";
+      setTimeout(newMath, 1500);
+    } else {
+      result.innerText = "❌ Try again!";
+      result.style.color = "#ff6b6b";
+    }
+  }
+  newMath();
+
+  // Game 9: Typing Speed Test
+  const sentences = [
+    "The quick brown fox jumps over the lazy dog",
+    "Typing games are fun and help improve your speed",
+    "Practice makes perfect in everything you do",
+    "JavaScript is a powerful programming language",
+    "Gaming brings people together from around the world"
+  ];
+  let currentSentence = "";
+  let startTime = 0;
+  
+  function startTyping() {
+    currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
+    document.getElementById("typing-sentence").innerText = currentSentence;
+    document.getElementById("typing-box").value = "";
+    document.getElementById("typing-result").innerText = "";
+    startTime = new Date().getTime();
+  }
+  
+  function checkTyping() {
+    const userText = document.getElementById("typing-box").value;
+    const end = new Date().getTime();
+    const result = document.getElementById("typing-result");
+    
+    if (!currentSentence) {
+      result.innerText = "Click 'New Sentence' first!";
+      result.style.color = "#ffa502";
+      return;
+    }
+    
+    if (userText.trim() === currentSentence) {
+      const timeSec = ((end - startTime) / 1000).toFixed(2);
+      const wpm = Math.round((currentSentence.split(' ').length / timeSec) * 60);
+      result.innerText = `🎉 Perfect! Time: ${timeSec}s | Speed: ${wpm} WPM`;
+      result.style.color = "#2ed573";
+    } else {
+      result.innerText = "❌ Not quite right. Try again!";
+      result.style.color = "#ff6b6b";
+    }
+  }
+
+  // Game 10: Reaction Time
+  let reactionStart = 0;
+  function startReaction() {
+    const btn = document.getElementById("reaction-button");
+    const instructions = document.getElementById("reaction-instructions");
+    const result = document.getElementById("reaction-result");
+    
+    btn.disabled = true;
+    btn.style.background = "#ff6b6b";
+    result.innerText = "";
+    instructions.innerText = "Wait for green... 🔴";
+    
+    const delay = Math.random() * 3000 + 1000;
+    setTimeout(() => {
+      reactionStart = new Date().getTime();
+      btn.disabled = false;
+      btn.innerText = "CLICK NOW!";
+      btn.style.background = "#2ed573";
+      instructions.innerText = "GO! 🟢";
+      
+      btn.onclick = () => {
+        const now = new Date().getTime();
+        const time = now - reactionStart;
+        let message = "";
+        
+        if (time < 200) message = "🚀 Lightning fast!";
+        else if (time < 300) message = "⚡ Excellent!";
+        else if (time < 500) message = "👍 Good reflexes!";
+        else message = "🐌 Keep practicing!";
+        
+        result.innerText = `${message} ${time}ms`;
+        btn.innerText = "Start Test";
+        btn.style.background = "linear-gradient(45deg, #ff6b6b, #ee5a52)";
+        instructions.innerText = "Click 'Start' and wait for green!";
+        btn.onclick = startReaction;
+      };
+    }, delay);
+  }
+</script>
+
+</body>
+</html>
